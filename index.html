@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLMS - Microfinance Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --secondary: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --bg-light: #F9FAFB;
+            --bg-white: #FFFFFF;
+            --text-dark: #111827;
+            --text-gray: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-white);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .logo-text h2 {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-gray);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-bar {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-light);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .user-profile:hover {
+            background: var(--bg-light);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: var(--secondary);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            border-bottom: 2px solid var(--border);
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-warning {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .badge-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .badge-primary {
+            background: #E0E7FF;
+            color: #3730A3;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 0.5rem;
+        }
+
+        .btn-small:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: none;
+            background: var(--bg-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            background: var(--bg-white);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-light);
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Recent Activity */
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .activity-item:hover {
+            background: var(--bg-light);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">ML</div>
+                <div class="logo-text">
+                    <h2>MLMS</h2>
+                    <p>Microfinance System</p>
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a class="nav-link active" data-page="home">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-page="staff">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        Staff
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-page="clients">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        Clients
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-page="loans">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Loans
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-page="repayment">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                        Repayment
+                    </a>
+                </li>
+            </ul>
+
+            <button class="btn-primary" onclick="openModal('newLoan')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                New Loan
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="search-bar">
+                    <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search clients, loans..." onkeyup="handleSearch()">
+                </div>
+
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="openModal('notifications')">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        <span class="notification-badge">3</span>
+                    </button>
+
+                    <div class="user-profile">
+                        <div class="user-avatar">AS</div>
+                        <span style="font-size: 0.9rem; font-weight: 500;">Asharib</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div id="pageContent">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Clients</span>
+                            <div class="stat-icon" style="background: #E0E7FF; color: #6366F1;">
+                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalClients">0</div>
+                        <div class="stat-change positive">
+                            <span>↑ 12%</span> from last month
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Active Loans</span>
+                            <div class="stat-icon" style="background: #D1FAE5; color: #10B981;">
+                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+                                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="activeLoans">0</div>
+                        <div class="stat-change positive">
+                            <span>↑ 8%</span> from last month
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Disbursed</span>
+                            <div class="stat-icon" style="background: #FEF3C7; color: #F59E0B;">
+                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value">PKR <span id="totalDisbursed">0</span></div>
+                        <div class="stat-change positive">
+                            <span>↑ 23%</span> from last month
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">High Risk Clients</span>
+                            <div class="stat-icon" style="background: #FEE2E2; color: #EF4444;">
+                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="highRiskClients">0</div>
+                        <div class="stat-change negative">
+                            <span>↓ 3%</span> from last month
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Grid -->
+                <div class="content-grid">
+                    <!-- Recent Loans -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Recent Loans</h3>
+                                <p class="card-subtitle">Latest loan applications</p>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="loansTable">
+                                <thead>
+                                    <tr>
+                                        <th>Loan ID</th>
+                                        <th>Client</th>
+                                        <th>Amount</th>
+                                        <th>Duration</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="loansTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-gray);">
+                                            No loans available. Click "New Loan" to create one.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Recent Activity</h3>
+                                <p class="card-subtitle">Latest system events</p>
+                            </div>
+                        </div>
+                        <div id="activityList">
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background: #E0E7FF; color: #6366F1;">
+                                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                    </svg>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">System initialized</div>
+                                    <div class="activity-time">Just now</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- New Loan Modal -->
+    <div id="newLoanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Loan</h3>
+                <button class="close-btn" onclick="closeModal('newLoan')">✕</button>
+            </div>
+            <form onsubmit="handleNewLoan(event)">
+                <div class="form-group">
+                    <label class="form-label">Select Client</label>
+                    <select id="loanClientSelect" class="form-input" required>
+                        <option value="">Choose a client...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Loan Type</label>
+                    <select id="loanType" class="form-input" required>
+                        <option value="">Select type...</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Business">Business</option>
+                        <option value="Agricultural">Agricultural</option>
+                        <option value="Education">Education</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Loan Amount (PKR)</label>
+                    <input type="number" id="loanAmount" class="form-input" placeholder="Enter amount" required min="1000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Duration (Months)</label>
+                    <input type="number" id="loanDuration" class="form-input" placeholder="Enter duration" required min="1" max="60">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" id="loanStartDate" class="form-input" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('newLoan')">Cancel</button>
+                    <button type="submit" class="btn-submit">Create Loan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Client Modal -->
+    <div id="registerClientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Register New Client</h3>
+                <button class="close-btn" onclick="closeModal('registerClient')">✕</button>
+            </div>
+            <form onsubmit="handleRegisterClient(event)">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="clientName" class="form-input" placeholder="Enter full name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CNIC (13 digits)</label>
+                    <input type="text" id="clientCNIC" class="form-input" placeholder="3520212345678" required maxlength="13" pattern="[0-9]{13}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number (11 digits)</label>
+                    <input type="text" id="clientPhone" class="form-input" placeholder="03001234567" required maxlength="11" pattern="[0-9]{11}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" id="clientAddress" class="form-input" placeholder="Enter address" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Monthly Income (PKR)</label>
+                    <input type="number" id="clientIncome" class="form-input" placeholder="Enter monthly income" required min="0">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('registerClient')">Cancel</button>
+                    <button type="submit" class="btn-submit">Register Client</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Staff Modal -->
+    <div id="registerStaffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Register New Staff</h3>
+                <button class="close-btn" onclick="closeModal('registerStaff')">✕</button>
+            </div>
+            <form onsubmit="handleRegisterStaff(event)">
+                <div class="form-group">
+                    <label class="form-label">Staff Name</label>
+                    <input type="text" id="staffName" class="form-input" placeholder="Enter staff name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Staff ID</label>
+                    <input type="text" id="staffID" class="form-input" placeholder="Enter staff ID" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="staffPassword" class="form-input" placeholder="Enter password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('registerStaff')">Cancel</button>
+                    <button type="submit" class="btn-submit">Register Staff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Loan Details Modal -->
+    <div id="viewLoanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Loan Details</h3>
+                <button class="close-btn" onclick="closeModal('viewLoan')">✕</button>
+            </div>
+            <div id="loanDetailsContent"></div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Notifications</h3>
+                <button class="close-btn" onclick="closeModal('notifications')">✕</button>
+            </div>
+            <div id="notificationsContent">
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: #FEE2E2; color: #EF4444;">⚠️</div>
+                    <div class="activity-content">
+                        <div class="activity-title">High risk client detected</div>
+                        <div class="activity-time">2 hours ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: #D1FAE5; color: #10B981;">✓</div>
+                    <div class="activity-content">
+                        <div class="activity-title">Loan payment received</div>
+                        <div class="activity-time">5 hours ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: #E0E7FF; color: #6366F1;">👤</div>
+                    <div class="activity-content">
+                        <div class="activity-title">New client registered</div>
+                        <div class="activity-time">1 day ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage (In-memory for demo)
+        let clients = [];
+        let loans = [];
+        let staff = [];
+        let activities = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleData();
+            updateDashboard();
+            setupNavigation();
+            setDefaultDate();
+        });
+
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('loanStartDate').value = today;
+        }
+
+        function loadSampleData() {
+            // Sample clients
+            clients = [
+                { name: "Aisha Khan", cnic: "3520212345678", phone: "03001234567", address: "Karachi, Pakistan", income: 45000, risk: "Low" },
+                { name: "Bilal Ahmed", cnic: "3520298765432", phone: "03119876543", address: "Lahore, Pakistan", income: 28000, risk: "Medium" },
+                { name: "Fatima Malik", cnic: "3520254321098", phone: "03221122334", address: "Islamabad, Pakistan", income: 52000, risk: "Low" },
+                { name: "Hassan Ali", cnic: "3520287654321", phone: "03335544332", address: "Multan, Pakistan", income: 18000, risk: "High" }
+            ];
+
+            // Sample loans
+            loans = [
+                { id: "L001", clientCNIC: "3520212345678", type: "Business", amount: 50000, duration: 12, startDate: "2024-11-01", status: "Active" },
+                { id: "L002", clientCNIC: "3520298765432", type: "Personal", amount: 25000, duration: 6, startDate: "2024-10-15", status: "Active" },
+                { id: "L003", clientCNIC: "3520254321098", type: "Agricultural", amount: 75000, duration: 18, startDate: "2024-09-20", status: "Active" }
+            ];
+
+            addActivity("System initialized with sample data", "info");
+        }
+
+        function setupNavigation() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const page = this.getAttribute('data-page');
+                    navigateToPage(page);
+                });
+            });
+        }
+
+        function navigateToPage(page) {
+            const content = document.getElementById('pageContent');
+            
+            switch(page) {
+                case 'home':
+                    loadDashboard();
+                    break;
+                case 'staff':
+                    loadStaffPage();
+                    break;
+                case 'clients':
+                    loadClientsPage();
+                    break;
+                case 'loans':
+                    loadLoansPage();
+                    break;
+                case 'repayment':
+                    loadRepaymentPage();
+                    break;
+            }
+        }
+
+        function loadDashboard() {
+            updateDashboard();
+        }
+
+        function loadStaffPage() {
+            const content = document.getElementById('pageContent');
+            content.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Staff Management</h3>
+                            <p class="card-subtitle">Manage staff members</p>
+                        </div>
+                        <button class="btn-primary" onclick="openModal('registerStaff')" style="width: auto; padding: 0.6rem 1.2rem;">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Add Staff
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Staff ID</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffTableBody">
+                                ${staff.length === 0 ? 
+                                    '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-gray);">No staff registered. Click "Add Staff" to register.</td></tr>' :
+                                    staff.map(s => `
+                                        <tr>
+                                            <td>${s.name}</td>
+                                            <td>${s.staffID}</td>
+                                            <td><span class="badge badge-success">Active</span></td>
+                                            <td>
+                                                <button class="btn-small">Edit</button>
+                                                <button class="btn-small">Remove</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadClientsPage() {
+            const content = document.getElementById('pageContent');
+            content.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Client Management</h3>
+                            <p class="card-subtitle">Total: ${clients.length} clients</p>
+                        </div>
+                        <button class="btn-primary" onclick="openModal('registerClient')" style="width: auto; padding: 0.6rem 1.2rem;">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Register Client
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>CNIC</th>
+                                    <th>Phone</th>
+                                    <th>Income</th>
+                                    <th>Risk Level</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${clients.map(c => `
+                                    <tr>
+                                        <td style="font-weight: 500;">${c.name}</td>
+                                        <td>${c.cnic}</td>
+                                        <td>${c.phone}</td>
+                                        <td>PKR ${c.income.toLocaleString()}</td>
+                                        <td><span class="badge badge-${getRiskClass(c.risk)}">${c.risk}</span></td>
+                                        <td>
+                                            <button class="btn-small" onclick='viewClientDetails(${JSON.stringify(c)})'>View</button>
+                                            <button class="btn-small">Edit</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadLoansPage() {
+            const content = document.getElementById('pageContent');
+            content.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Loan Management</h3>
+                            <p class="card-subtitle">Total: ${loans.length} loans</p>
+                        </div>
+                        <button class="btn-primary" onclick="openModal('newLoan')" style="width: auto; padding: 0.6rem 1.2rem;">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            New Loan
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Loan ID</th>
+                                    <th>Client</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Duration</th>
+                                    <th>Start Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${loans.map(l => {
+                                    const client = clients.find(c => c.cnic === l.clientCNIC);
+                                    const installment = (l.amount / l.duration).toFixed(2);
+                                    return `
+                                        <tr>
+                                            <td style="font-weight: 600; color: var(--primary);">${l.id}</td>
+                                            <td>${client ? client.name : 'Unknown'}</td>
+                                            <td>${l.type}</td>
+                                            <td>PKR ${l.amount.toLocaleString()}</td>
+                                            <td>${l.duration} months</td>
+                                            <td>${l.startDate}</td>
+                                            <td><span class="badge badge-success">${l.status}</span></td>
+                                            <td>
+                                                <button class="btn-small" onclick='viewLoanDetails(${JSON.stringify(l)})'>View</button>
+                                                <button class="btn-small">Schedule</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadRepaymentPage() {
+            const content = document.getElementById('pageContent');
+            content.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Repayment Schedule</h3>
+                            <p class="card-subtitle">Track loan repayments</p>
+                        </div>
+                    </div>
+                    <div style="padding: 2rem; text-align: center; color: var(--text-gray);">
+                        <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                        <h3>Repayment Tracking</h3>
+                        <p>View and manage loan repayment schedules for all active loans.</p>
+                        <button class="btn-primary" style="width: auto; margin-top: 1rem;" onclick="loadLoansPage()">View Loans</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('totalClients').textContent = clients.length;
+            document.getElementById('activeLoans').textContent = loans.filter(l => l.status === 'Active').length;
+            
+            const totalAmount = loans.reduce((sum, l) => sum + l.amount, 0);
+            document.getElementById('totalDisbursed').textContent = totalAmount.toLocaleString();
+            
+            const highRisk = clients.filter(c => c.risk === 'High').length;
+            document.getElementById('highRiskClients').textContent = highRisk;
+
+            // Update loans table
+            updateLoansTable();
+            
+            // Update client select dropdown
+            updateClientSelect();
+
+            // Update activity
+            updateActivityList();
+        }
+
+        function updateLoansTable() {
+            const tbody = document.getElementById('loansTableBody');
+            if (loans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-gray);">No loans available. Click "New Loan" to create one.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = loans.slice(0, 5).map(loan => {
+                const client = clients.find(c => c.cnic === loan.clientCNIC);
+                return `
+                    <tr>
+                        <td style="font-weight: 600; color: var(--primary);">${loan.id}</td>
+                        <td>${client ? client.name : 'Unknown'}</td>
+                        <td>PKR ${loan.amount.toLocaleString()}</td>
+                        <td>${loan.duration} months</td>
+                        <td><span class="badge badge-success">${loan.status}</span></td>
+                        <td>
+                            <button class="btn-small" onclick='viewLoanDetails(${JSON.stringify(loan)})'>View</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateClientSelect() {
+            const select = document.getElementById('loanClientSelect');
+            select.innerHTML = '<option value="">Choose a client...</option>' +
+                clients.map(c => `<option value="${c.cnic}">${c.name} - ${c.cnic}</option>`).join('');
+        }
+
+        function updateActivityList() {
+            const list = document.getElementById('activityList');
+            if (activities.length === 0) {
+                list.innerHTML = `
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: #E0E7FF; color: #6366F1;">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                            </svg>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">System initialized</div>
+                            <div class="activity-time">Just now</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = activities.slice(0, 5).map(a => `
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: ${a.color}; color: ${a.iconColor};">${a.icon}</div>
+                    <div class="activity-content">
+                        <div class="activity-title">${a.message}</div>
+                        <div class="activity-time">${a.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addActivity(message, type) {
+            const icons = {
+                'info': { icon: 'ℹ️', color: '#E0E7FF', iconColor: '#6366F1' },
+                'success': { icon: '✓', color: '#D1FAE5', iconColor: '#10B981' },
+                'warning': { icon: '⚠️', color: '#FEF3C7', iconColor: '#F59E0B' },
+                'error': { icon: '✕', color: '#FEE2E2', iconColor: '#EF4444' }
+            };
+
+            const config = icons[type] || icons['info'];
+            activities.unshift({
+                message,
+                time: 'Just now',
+                ...config
+            });
+
+            updateActivityList();
+        }
+
+        function getRiskClass(risk) {
+            switch(risk.toLowerCase()) {
+                case 'low': return 'success';
+                case 'medium': return 'warning';
+                case 'high': return 'danger';
+                default: return 'primary';
+            }
+        }
+
+        // Modal Functions
+        function openModal(modalName) {
+            const modal = document.getElementById(modalName + 'Modal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(modalName) {
+            const modal = document.getElementById(modalName + 'Modal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Form Handlers
+        function handleRegisterClient(event) {
+            event.preventDefault();
+            
+            const client = {
+                name: document.getElementById('clientName').value,
+                cnic: document.getElementById('clientCNIC').value,
+                phone: document.getElementById('clientPhone').value,
+                address: document.getElementById('clientAddress').value,
+                income: parseInt(document.getElementById('clientIncome').value)
+            };
+
+            // Calculate risk
+            let riskScore = 0;
+            if (client.income < 30000) riskScore += 20;
+            if (!client.phone) riskScore += 15;
+            if (!client.address) riskScore += 5;
+
+            client.risk = riskScore < 20 ? 'Low' : riskScore < 40 ? 'Medium' : 'High';
+
+            clients.push(client);
+            addActivity(`New client registered: ${client.name}`, 'success');
+            
+            closeModal('registerClient');
+            event.target.reset();
+            updateDashboard();
+            
+            alert(`Client ${client.name} registered successfully!\nRisk Level: ${client.risk}`);
+        }
+
+        function handleRegisterStaff(event) {
+            event.preventDefault();
+            
+            const staffMember = {
+                name: document.getElementById('staffName').value,
+                staffID: document.getElementById('staffID').value,
+                password: document.getElementById('staffPassword').value
+            };
+
+            staff.push(staffMember);
+            addActivity(`New staff registered: ${staffMember.name}`, 'info');
+            
+            closeModal('registerStaff');
+            event.target.reset();
+            
+            alert(`Staff ${staffMember.name} registered successfully!`);
+        }
+
+        function handleNewLoan(event) {
+            event.preventDefault();
+            
+            const clientCNIC = document.getElementById('loanClientSelect').value;
+            const client = clients.find(c => c.cnic === clientCNIC);
+            
+            if (!client) {
+                alert('Please select a valid client');
+                return;
+            }
+
+            const amount = parseFloat(document.getElementById('loanAmount').value);
+            const duration = parseInt(document.getElementById('loanDuration').value);
+
+            // Risk-based recommendation
+            if (client.risk === 'High' && amount > 50000) {
+                if (!confirm(`⚠️ Risk Alert: This is a high-risk client. Recommended max loan: PKR 50,000.\n\nProceed with PKR ${amount.toLocaleString()} anyway?`)) {
+                    return;
+                }
+            }
+
+            const loan = {
+                id: `L${String(loans.length + 1).padStart(3, '0')}`,
+                clientCNIC: clientCNIC,
+                type: document.getElementById('loanType').value,
+                amount: amount,
+                duration: duration,
+                startDate: document.getElementById('loanStartDate').value,
+                status: 'Active'
+            };
+
+            loans.push(loan);
+            addActivity(`New loan created: ${loan.id} for ${client.name}`, 'success');
+            
+            closeModal('newLoan');
+            event.target.reset();
+            setDefaultDate();
+            updateDashboard();
+            
+            const monthlyInstallment = (amount / duration).toFixed(2);
+            alert(`Loan ${loan.id} created successfully!\n\nClient: ${client.name}\nAmount: PKR ${amount.toLocaleString()}\nMonthly Installment: PKR ${monthlyInstallment}`);
+        }
+
+        function viewLoanDetails(loan) {
+            const client = clients.find(c => c.cnic === loan.clientCNIC);
+            const monthlyInstallment = (loan.amount / loan.duration).toFixed(2);
+            
+            const content = document.getElementById('loanDetailsContent');
+            content.innerHTML = `
+                <div style="display: grid; gap: 1rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px;">
+                        <strong>Loan ID:</strong>
+                        <span style="color: var(--primary); font-weight: 600;">${loan.id}</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; padding: 0.75rem;">
+                        <strong>Client Name:</strong>
+                        <span>${client ? client.name : 'Unknown'}</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px;">
+                        <strong>CNIC:</strong>
+                        <span>${loan.clientCNIC}</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; padding: 0.75rem;">
+                        <strong>Loan Type:</strong>
+                        <span>${loan.type}</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px;">
+                        <strong>Loan Amount:</strong>
+                        <span style="color: var(--secondary); font-weight: 600;">PKR ${loan.amount.toLocaleString()}</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; padding: 0.75rem;">
+                        <strong>Duration:</strong>
+                        <span>${loan.duration} months</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px;">
+                        <strong>Start Date:</strong>
+                        <span>${loan.startDate}</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; padding: 0.75rem;">
+                        <strong>Monthly Installment:</strong>
+                        <span style="color: var(--warning); font-weight: 600;">PKR ${monthlyInstallment}</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; padding: 0.75rem; background: var(--bg-light); border-radius: 8px;">
+                        <strong>Status:</strong>
+                        <span><span class="badge badge-success">${loan.status}</span></span>
+                    </div>
+                    ${client ? `
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; padding: 0.75rem;">
+                        <strong>Client Risk Level:</strong>
+                        <span><span class="badge badge-${getRiskClass(client.risk)}">${client.risk}</span></span>
+                    </div>
+                    ` : ''}
+                </div>
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                    <button class="btn-primary" style="width: 100%;" onclick="closeModal('viewLoan')">Close</button>
+                </div>
+            `;
+            
+            openModal('viewLoan');
+        }
+
+        function viewClientDetails(client) {
+            alert(`Client Details:\n\nName: ${client.name}\nCNIC: ${client.cnic}\nPhone: ${client.phone}\nAddress: ${client.address}\nIncome: PKR ${client.income.toLocaleString()}\nRisk Level: ${client.risk}`);
+        }
+
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                updateLoansTable();
+                return;
+            }
+
+            const filteredLoans = loans.filter(loan => {
+                const client = clients.find(c => c.cnic === loan.clientCNIC);
+                return loan.id.toLowerCase().includes(searchTerm) ||
+                       (client && client.name.toLowerCase().includes(searchTerm)) ||
+                       loan.clientCNIC.includes(searchTerm);
+            });
+
+            const tbody = document.getElementById('loansTableBody');
+            if (filteredLoans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-gray);">No results found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filteredLoans.map(loan => {
+                const client = clients.find(c => c.cnic === loan.clientCNIC);
+                return `
+                    <tr>
+                        <td style="font-weight: 600; color: var(--primary);">${loan.id}</td>
+                        <td>${client ? client.name : 'Unknown'}</td>
+                        <td>PKR ${loan.amount.toLocaleString()}</td>
+                        <td>${loan.duration} months</td>
+                        <td><span class="badge badge-success">${loan.status}</span></td>
+                        <td>
+                            <button class="btn-small" onclick='viewLoanDetails(${JSON.stringify(loan)})'>View</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+
+        // Add some animation to stat cards on load
+        window.addEventListener('load', function() {
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.animation = 'slideUp 0.5s ease';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
+</body>
+</html>
